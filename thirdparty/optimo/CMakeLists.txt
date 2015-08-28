@@ -62,11 +62,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # Locations to search for Eigen
 # Eigen
-find_package(Eigen REQUIRED)
-if (EIGEN_FOUND)
-  message("-- Found Eigen version ${EIGEN_VERSION}: ${EIGEN_INCLUDE_DIRS}")
-endif (EIGEN_FOUND)
-include_directories(${EIGEN_INCLUDE_DIRS})
+find_package(Eigen3 REQUIRED)
+# if (EIGEN_FOUND)
+#   message("-- Found Eigen version ${EIGEN_VERSION}: ${EIGEN_INCLUDE_DIRS}")
+# endif (EIGEN_FOUND)
+include_directories(${Eigen3_INCLUDE_DIRS})
 
 # Setting CXX FLAGS appropriately. The code below was inspired from
 # Google CERES and modified for this library.

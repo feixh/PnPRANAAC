@@ -37,9 +37,11 @@ if (COMMAND cmake_policy)
 endif (COMMAND cmake_policy)
 
 project (statx C CXX)
-include_directories(../..)
+include_directories(
+${PROJECT_SOURCE_DIR}	)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/libraries/statx/cmake/Modules/")
+# set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/libraries/statx/cmake/Modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeModules")
 
 # C++11
 # Compiler-specific C++11 activation.
@@ -68,14 +70,14 @@ message("-- Default Install prefix: ${CMAKE_INSTALL_PREFIX}")
 option(STATX_WITH_CERES "Enables GEV parameter estimation using Ceres" ON)
 
 # Eigen
-find_package(Eigen REQUIRED)
-if (EIGEN_FOUND)
-  message("-- Found Eigen version ${EIGEN_VERSION}: ${EIGEN_INCLUDE_DIRS}")
-endif (EIGEN_FOUND)
-include_directories(${EIGEN_INCLUDE_DIRS})
+find_package(Eigen3 REQUIRED)
+# if (EIGEN_FOUND)
+#   message("-- Found Eigen version ${EIGEN_VERSION}: ${EIGEN_INCLUDE_DIRS}")
+# endif (EIGEN_FOUND)
+include_directories( ${EIGEN3_INCLUDE_DIR} )
 
 # Google Flags
-find_package(Gflags REQUIRED)
+find_package(gflags REQUIRED)
 if(GFLAGS_FOUND)
 include_directories(${GFLAGS_INCLUDE_DIRS})
 endif(GFLAGS_FOUND)
