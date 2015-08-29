@@ -2,10 +2,14 @@ cmake_minimum_required(VERSION 2.8)
 project(TheiaSolver)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_MODULE_PATH $CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules )
 set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin )
 set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib )
 
 set(Eigen_INCLUDE_DIR /usr/include/eigen3)
+
+find_package(Glog REQUIRED)
+
 
 include_directories(
 ${PROJECT_SOURCE_DIR}/include
@@ -13,6 +17,7 @@ ${PROJECT_SOURCE_DIR}/thirdparty/optimo
 ${PROJECT_SOURCE_DIR}/thirdparty/statx
 ${PROJECT_SOURCE_DIR}/thirdparty
 ${Eigen_INCLUDE_DIR}
+${GLOG_INCLUDE_DIRS}
 )
 
 # Add sources
@@ -35,7 +40,7 @@ add_library( TheiaSolver STATIC ${THEIA_SRC} )
 
 link_libraries(
 TheiaSolver
-thirdparty/statx/build/lib/libstatx.a
-blas
-llapack
+${GLOG_LIBRARIES}
 )
+
+add_executable( ransac_test test/ransac_test.cpp)
