@@ -109,15 +109,17 @@ endif(STATX_WITH_CERES)
 
 # Find and include optimo headers
 message("-- Check for Optimo")
-find_path(OPTIMO_INCLUDE_DIR
-  NAMES optimo/solvers/bfgs.h
-  PATHS ${CMAKE_SOURCE_DIR}/libraries/optimo /usr/include /usr/local/include)
-
-if(OPTIMO_INCLUDE_DIR)
-  message("-- Found optimo headers: ${OPTIMO_INCLUDE_DIR}")
-else(OPTIMO_INCLUDE_DIR)
-  message(FATAL_ERROR "Can't find optimo headers. Try passing -DOPTIMO_INCLUDE_DIR=...")
-endif(OPTIMO_INCLUDE_DIR)
+# find_path(OPTIMO_INCLUDE_DIR
+#   NAMES optimo/solvers/bfgs.h
+#   PATHS ${CMAKE_SOURCE_DIR}/libraries/optimo /usr/include /usr/local/include)
+# 
+# if(OPTIMO_INCLUDE_DIR)
+#   message("-- Found optimo headers: ${OPTIMO_INCLUDE_DIR}")
+# else(OPTIMO_INCLUDE_DIR)
+#   message(FATAL_ERROR "Can't find optimo headers. Try passing -DOPTIMO_INCLUDE_DIR=...")
+# endif(OPTIMO_INCLUDE_DIR)
+set(OPTIMO_INCLUDE_DIR 
+		${PROJECT_SOURCE_DIR}/../optimo)
 include_directories(${OPTIMO_INCLUDE_DIR})
 
 # Polygamma functions from burkardt

@@ -1,32 +1,41 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 2.8)
 project(TheiaSolver)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin )
 set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib )
 
+set(Eigen_INCLUDE_DIR /usr/include/eigen3)
+
 include_directories(
 ${PROJECT_SOURCE_DIR}/include
-
-
+${PROJECT_SOURCE_DIR}/thirdparty/optimo
+${PROJECT_SOURCE_DIR}/thirdparty/statx
+${PROJECT_SOURCE_DIR}/thirdparty
+${Eigen_INCLUDE_DIR}
 )
-
-set(SOURCE_FILES )
 
 # Add sources
 set(THEIA_SRC
-  math/closed_form_polynomial_solver.cc
-  math/find_polynomial_roots_companion_matrix.cc
-  math/find_polynomial_roots_jenkins_traub.cc
-  math/matrix/dominant_eigensolver.cc
-  math/polynomial.cc
-  math/probability/sequential_probability_ratio.cc
+  src/math/closed_form_polynomial_solver.cc
+  src/math/find_polynomial_roots_companion_matrix.cc
+  src/math/find_polynomial_roots_jenkins_traub.cc
+  src/math/matrix/dominant_eigensolver.cc
+  src/math/polynomial.cc
+  src/math/probability/sequential_probability_ratio.cc
 
-  util/filesystem.cc
-  util/random.cc
-  util/stringprintf.cc
-  util/threadpool.cc
-  util/timer.cc
+  src/util/filesystem.cc
+  src/util/random.cc
+  src/util/stringprintf.cc
+  src/util/threadpool.cc
+  src/util/timer.cc
 )
 
-add_library( TheiaSolver ${THEIA_SRC} )
+add_library( TheiaSolver STATIC ${THEIA_SRC} )
+
+link_libraries(
+TheiaSolver
+thirdparty/statx/build/lib/libstatx.a
+blas
+llapack
+)
