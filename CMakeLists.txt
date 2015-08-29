@@ -9,6 +9,7 @@ set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib )
 set(Eigen_INCLUDE_DIR /usr/include/eigen3)
 
 find_package(Glog REQUIRED)
+#find_package(opengv REQUIRED)
 
 
 include_directories(
@@ -18,6 +19,7 @@ ${PROJECT_SOURCE_DIR}/thirdparty/statx
 ${PROJECT_SOURCE_DIR}/thirdparty
 ${Eigen_INCLUDE_DIR}
 ${GLOG_INCLUDE_DIRS}
+${opengv_INCLUDE_DIRS}
 )
 
 # Add sources
@@ -34,6 +36,8 @@ set(THEIA_SRC
   src/util/stringprintf.cc
   src/util/threadpool.cc
   src/util/timer.cc
+
+  src/pnpsolvers/P3p.cpp
 )
 
 add_library( TheiaSolver STATIC ${THEIA_SRC} )
@@ -43,4 +47,5 @@ TheiaSolver
 ${GLOG_LIBRARIES}
 )
 
-add_executable( ransac_test test/ransac_test.cpp)
+#add_executable( ransac_test test/ransac_test.cpp)
+#target_link_libraries(ransac_test )
