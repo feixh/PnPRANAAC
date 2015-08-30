@@ -58,7 +58,7 @@ P3P_Kneip::P3P_Kneip() {
 P3P_Kneip::~P3P_Kneip() {
 }
 
-int P3P_Kneip::computePoses( Matrix3d featureVectors, Matrix3d worldPoints, vector< Matrix<double,3,4> > &solutions )
+int P3P_Kneip::computePoses( Matrix3d featureVectors, Matrix3d worldPoints, vector< Matrix<double,3,4> > &solutions ) const
 {
 	// Extraction of world points
 
@@ -245,7 +245,7 @@ int P3P_Kneip::computePoses( Matrix3d featureVectors, Matrix3d worldPoints, vect
 	return 0;
 }
 
-int P3P_Kneip::solveQuartic( Matrix<double,5,1> factors, Matrix<double,4,1> &realRoots  )
+int P3P_Kneip::solveQuartic( Matrix<double,5,1> factors, Matrix<double,4,1> &realRoots  ) const
 {
 	double A = factors[0];
 	double B = factors[1];

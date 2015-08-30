@@ -51,7 +51,7 @@ public:
 	P3P_Kneip();
 	virtual ~P3P_Kneip();
 
-	int computePoses( Eigen::Matrix3d featureVectors, Eigen::Matrix3d worldPoints, std::vector< Eigen::Matrix<double,3,4> > &solutions );
-	int solveQuartic( Eigen::Matrix< double, 5, 1 > factors, Eigen::Matrix< double, 4, 1 > & realRoots );
+	int computePoses( Eigen::Matrix3d featureVectors, Eigen::Matrix3d worldPoints, std::vector< Eigen::Matrix<double,3,4> > &solutions ) const;
+	int solveQuartic( Eigen::Matrix< double, 5, 1 > factors, Eigen::Matrix< double, 4, 1 > & realRoots ) const;
 };
 
