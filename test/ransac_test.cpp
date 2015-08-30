@@ -9,6 +9,7 @@
 
 // theia
 #include <theia/solvers/ransac.h>
+#include <theia/solvers/arrsac.h>
 #include <theia/solvers/estimator.h>
 #include <theia/solvers/random_sampler.h>
 #include <theia/util/timer.h>
@@ -131,13 +132,14 @@ int main()
     RansacParameters ransac_params;
     ransac_params.error_thresh = 1e-2;
     ransac_params.failure_probability = 0.05;
-    ransac_params.max_iterations = 10000;
-    ransac_params.min_inlier_ratio = 0.2;
-    ransac_params.use_mle = false;
+    ransac_params.max_iterations = 3000;
+    ransac_params.min_inlier_ratio = 0.1;
+    ransac_params.use_mle = true;
 
 
     P3PEstimator estimator;
-    Ransac< P3PEstimator > ransac(ransac_params, estimator);
+     Ransac< P3PEstimator > ransac(ransac_params, estimator);
+//    Arrsac< P3PEstimator > ransac( ransac_params, estimator, 500, 30);
     ransac.Initialize();
     RansacSummary summary;
     Matrix< double, 3, 4 > best_model;
