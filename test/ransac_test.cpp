@@ -125,6 +125,7 @@ int main()
 
     P3PEstimator estimator;
     Ransac< P3PEstimator > ransac(ransac_params, estimator);
+    ransac.Initialize();
     RansacSummary summary;
     Matrix< double, 3, 4 > best_model;
     ransac.Estimate( data, &best_model, &summary );
