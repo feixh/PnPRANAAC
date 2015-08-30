@@ -7,10 +7,13 @@
 #include <vector>
 #include <cassert>
 
-#include <pnpsolvers/P3p.h>
+#include "pnpsolvers/P3P_Kneip.h"
+#include "pnpsolvers/P3p.h"
 
 #include <Eigen/Core>
 #include <Eigen/StdVector>
+#include <TooN/TooN.h>
+#include <pnpsolvers/P3p.h>
 
 using namespace std;
 using namespace Eigen;
@@ -35,7 +38,6 @@ int main()
         float x, y, z;
         ifs >> x >> y >> z;
         pts.emplace_back(x, y, z);
-        pts.back().normalize();
     }
     float gwc[3][4];
     for ( int i = 0; i < 3; ++i ) {
@@ -45,6 +47,24 @@ int main()
     }
     ifs.close();
     P3p p3p;
+    TooN::Matrix<3,3> f;
+    TooN::Matrix<3,3> w;
+    TooN::Matrix<3,16> sol;
+    for ( int i = 0; i < 3; ++i )
+    {
+        for ( int j = 0; j < 3; ++j ){
+            f(j,i) = pc[i](j);
+            w(j,i) = pts[i](j);
+        }
+    }
+    p3p.computePoses( f, w, sol );
+    cout << sol << endl;
+
+
+
+    // eigen version of Kneip's P3P algorithm
+    cout << "===" << endl;
+    P3P_Kneip kp3p;
     Matrix3d featureVectors;
     Matrix3d worldPoints;
     for ( int i = 0; i < 3; ++i )
@@ -53,7 +73,7 @@ int main()
         worldPoints.col(i) = pts[i];
     }
     vector< Matrix<double,3,4> > solutions;
-    p3p.computePoses( featureVectors, worldPoints, solutions );
+    kp3p.computePoses( featureVectors, worldPoints, solutions );
     for ( int i = 0; i < solutions.size(); ++i )
     {
         cout << solutions[i] << endl;

@@ -37,6 +37,7 @@ set(THEIA_SRC
   src/util/threadpool.cc
   src/util/timer.cc
 
+  src/pnpsolvers/P3P_Kneip.cpp
   src/pnpsolvers/P3p.cpp
 )
 

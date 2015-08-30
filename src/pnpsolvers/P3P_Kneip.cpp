@@ -26,7 +26,7 @@
  */
 
 /*
- * P3p.cpp
+ * P3P_Kneip.cpp
  *
  *  Created on: Nov 2, 2010
  *      Author: Laurent Kneip
@@ -43,55 +43,55 @@
  *                  -1 if world points aligned
  */
 
-#include "pnpsolvers/P3p.h"
+#include "pnpsolvers/P3P_Kneip.h"
+#include <Eigen/Geometry>
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-#include <complex>
-#include <TooN/SVD.h>
-#include <TooN/determinant.h>
+#include <vector>
 
-P3p::P3p() {
+using namespace std;
+using namespace Eigen;
+
+
+P3P_Kneip::P3P_Kneip() {
 }
 
-P3p::~P3p() {
+P3P_Kneip::~P3P_Kneip() {
 }
 
-int P3p::computePoses( TooN::Matrix<3,3> featureVectors, TooN::Matrix<3,3> worldPoints, TooN::Matrix<3,16> & solutions )
+int P3P_Kneip::computePoses( Matrix3d featureVectors, Matrix3d worldPoints, vector< Matrix<double,3,4> > &solutions )
 {
 	// Extraction of world points
 
-	TooN::Vector<3> P1 = worldPoints.T()[0];
-	TooN::Vector<3> P2 = worldPoints.T()[1];
-	TooN::Vector<3> P3 = worldPoints.T()[2];
+	Vector3d P1 = worldPoints.col(0);
+	Vector3d P2 = worldPoints.col(1);
+	Vector3d P3 = worldPoints.col(2);
 
 	// Verification that world points are not colinear
 
-	TooN::Vector<3> temp1 = P2 - P1;
-	TooN::Vector<3> temp2 = P3 - P1;
+	Vector3d temp1 = P2 - P1;
+	Vector3d temp2 = P3 - P1;
 
-	if(TooN::norm(temp1 ^ temp2) == 0)
+	if( (temp1.cross(temp2)).norm() == 0)
 		return -1;
 
 	// Extraction of feature vectors
 
-	TooN::Vector<3> f1 = featureVectors.T()[0];
-	TooN::Vector<3> f2 = featureVectors.T()[1];
-	TooN::Vector<3> f3 = featureVectors.T()[2];
+	Vector3d f1 = featureVectors.col(0);
+	Vector3d f2 = featureVectors.col(1);
+	Vector3d f3 = featureVectors.col(2);
 
 	// Creation of intermediate camera frame
 
-	TooN::Vector<3> e1 = f1;
-	TooN::Vector<3> e3 = f1 ^ f2;
-	e3 = e3 / TooN::norm(e3);
-	TooN::Vector<3> e2 = e3 ^ e1;
+	Vector3d e1 = f1;
+	Vector3d e3 = f1.cross(f2);
+	e3 = e3 / e3.norm();
+	Vector3d e2 = e3.cross(e1);
 
-	TooN::Matrix<3,3> T;
-	T[0] = e1;
-	T[1] = e2;
-	T[2] = e3;
+	Matrix3d T;
+	T.col(0) = e1;
+	T.col(1) = e2;
+	T.col(2) = e3;
+	T.transposeInPlace();
 
 	f3 = T*f3;
 
@@ -99,50 +99,52 @@ int P3p::computePoses( TooN::Matrix<3,3> featureVectors, TooN::Matrix<3,3> world
 
 	if( f3[2] > 0 )
 	{
-		f1 = featureVectors.T()[1];
-		f2 = featureVectors.T()[0];
-		f3 = featureVectors.T()[2];
+		f1 = featureVectors.col(0);
+		f2 = featureVectors.col(1);
+		f3 = featureVectors.col(2);
 
 		e1 = f1;
-		e3 = f1 ^ f2;
-		e3 = e3 / TooN::norm(e3);
-		e2 = e3 ^ e1;
+		e3 = f1.cross(f2);
+		e3 = e3 / e3.norm();
+		e2 = e3.cross(e1);
 
-		T[0] = e1;
-		T[1] = e2;
-		T[2] = e3;
+		T.col(0) = e1;
+		T.col(1) = e2;
+		T.col(2) = e3;
+		T.transposeInPlace();
 
 		f3 = T*f3;
 
-		P1 = worldPoints.T()[1];
-		P2 = worldPoints.T()[0];
-		P3 = worldPoints.T()[2];
+		P1 = worldPoints.col(1);
+		P2 = worldPoints.col(0);
+		P3 = worldPoints.col(2);
 	}
 
 	// Creation of intermediate world frame
 
-	TooN::Vector<3> n1 = P2-P1;
-	n1 = n1 / TooN::norm(n1);
-	TooN::Vector<3> n3 = n1 ^ (P3-P1);
-	n3 = n3 / TooN::norm(n3);
-	TooN::Vector<3> n2 = n3 ^ n1;
+	Vector3d n1 = P2-P1;
+	n1 = n1 / n1.norm();
+	Vector3d n3 = n1.cross(P3-P1);
+	n3 = n3 / n3.norm();
+	Vector3d n2 = n3.cross(n1);
 
-	TooN::Matrix<3,3> N;
-	N[0] = n1;
-	N[1] = n2;
-	N[2] = n3;
+	Matrix3d N;
+	N.col(0) = n1;
+	N.col(1) = n2;
+	N.col(2) = n3;
+	N.transposeInPlace();
 
 	// Extraction of known parameters
 
 	P3 = N*(P3-P1);
 
-	double d_12 = TooN::norm(P2-P1);
+	double d_12 = (P2-P1).norm();
 	double f_1 = f3[0]/f3[2];
 	double f_2 = f3[1]/f3[2];
 	double p_1 = P3[0];
 	double p_2 = P3[1];
 
-	double cos_beta = f1 * f2;
+	double cos_beta = f1.dot(f2);
 	double b = 1/(1-pow(cos_beta,2)) - 1;
 
 	if (cos_beta < 0)
@@ -165,7 +167,7 @@ int P3p::computePoses( TooN::Matrix<3,3> featureVectors, TooN::Matrix<3,3> world
 
 	// Computation of factors of 4th degree polynomial
 
-	TooN::Vector<5> factors;
+	Matrix<double,5,1> factors;
 
 	factors[0] = -f_2_pw2*p_2_pw4
 				 -p_2_pw4*f_1_pw2
@@ -204,7 +206,7 @@ int P3p::computePoses( TooN::Matrix<3,3> featureVectors, TooN::Matrix<3,3> world
 
 	// Computation of roots
 
-	TooN::Vector<4> realRoots;
+	Matrix<double,4,1> realRoots;
 
 	this->solveQuartic( factors, realRoots );
 
@@ -222,30 +224,28 @@ int P3p::computePoses( TooN::Matrix<3,3> featureVectors, TooN::Matrix<3,3> world
 		if (cot_alpha < 0)
 			cos_alpha = -cos_alpha;
 
-		TooN::Vector<3> C = TooN::makeVector(
-				d_12*cos_alpha*(sin_alpha*b+cos_alpha),
-				cos_theta*d_12*sin_alpha*(sin_alpha*b+cos_alpha),
-				sin_theta*d_12*sin_alpha*(sin_alpha*b+cos_alpha));
+		Vector3d C( d_12*cos_alpha*(sin_alpha*b+cos_alpha),
+					cos_theta*d_12*sin_alpha*(sin_alpha*b+cos_alpha),
+					sin_theta*d_12*sin_alpha*(sin_alpha*b+cos_alpha));
 
-		C = P1 + N.T()*C;
+		C = P1 + N.transpose()*C;
 
-		TooN::Matrix<3,3> R;
-		R[0] = TooN::makeVector(	-cos_alpha,		-sin_alpha*cos_theta,	-sin_alpha*sin_theta );
-		R[1] = TooN::makeVector(	sin_alpha,		-cos_alpha*cos_theta,	-cos_alpha*sin_theta );
-		R[2] = TooN::makeVector(	0,				-sin_theta,				cos_theta );
+		Matrix3d R;
+		R <<    -cos_alpha,		-sin_alpha*cos_theta,	-sin_alpha*sin_theta,
+				sin_alpha,		-cos_alpha*cos_theta,	-cos_alpha*sin_theta,
+				0,				-sin_theta,				cos_theta;
 
-		R = N.T()*R.T()*T;
-
-		solutions.T()[i*4] = C;
-		solutions.T()[i*4+1] = R.T()[0];
-		solutions.T()[i*4+2] = R.T()[1];
-		solutions.T()[i*4+3] = R.T()[2];
+		R = N.transpose()*R.transpose()*T;
+		Matrix<double,3,4> gwc;
+		gwc.block<3,3>(0,0) = R;
+		gwc.block<3,1>(0,3) = C;
+		solutions.push_back( gwc );
 	}
 
 	return 0;
 }
 
-int P3p::solveQuartic( TooN::Vector<5> factors, TooN::Vector<4> & realRoots  )
+int P3P_Kneip::solveQuartic( Matrix<double,5,1> factors, Matrix<double,4,1> &realRoots  )
 {
 	double A = factors[0];
 	double B = factors[1];
