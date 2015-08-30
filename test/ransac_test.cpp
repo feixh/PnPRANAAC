@@ -11,6 +11,8 @@
 #include <theia/solvers/ransac.h>
 #include <theia/solvers/estimator.h>
 #include <theia/solvers/random_sampler.h>
+#include <theia/util/timer.h>
+
 
 // eigen
 #include <Eigen/Core>
@@ -29,10 +31,13 @@ struct Match2D3D
     Vector3d worldPoint;  // points in world coordinate system
 };
 
-P3P_Kneip solver;
 
 class P3PEstimator : public Estimator< Match2D3D, Matrix<double, 3, 4 > > {
 public:
+    P3PEstimator():
+        Estimator< Match2D3D, Matrix<double, 3, 4> >(),
+        solver(){}
+
 // Get the minimum number of samples needed to generate a model.
     virtual double SampleSize() const {
         return 3;
@@ -73,11 +78,16 @@ public:
       // model is gwc
       const Vector3d &worldPoint( data.worldPoint );
       Vector3d proj( model.block<3,3>(0,0).transpose()*( worldPoint - model.block<3,1>(0,3) ) );
+      if ( proj(2) < 0 ){
+          return 1000000;
+      }
       const Vector3d &featureVector( data.featureVector );
       double dx( featureVector(0)/featureVector(2) - proj(0)/proj(2) );
       double dy( featureVector(1)/featureVector(2) - proj(1)/proj(2) );
-      return dx*dy + dy*dy;
+      return dx*dx + dy*dy;
   }
+private:
+    P3P_Kneip solver;
 };
 
 int main()
@@ -109,7 +119,7 @@ int main()
         }
     }
     ifs.close();
-    vector< Match2D3D > data( pc.size() );
+    vector< Match2D3D > data( n );
     for ( size_t i = 0; i < n; ++i )
     {
         data[i].featureVector = pc[i];
@@ -119,8 +129,11 @@ int main()
 
     // setup ransac parameters
     RansacParameters ransac_params;
-    ransac_params.error_thresh = 0.01;
+    ransac_params.error_thresh = 1e-2;
     ransac_params.failure_probability = 0.05;
+    ransac_params.max_iterations = 10000;
+    ransac_params.min_inlier_ratio = 0.2;
+    ransac_params.use_mle = false;
 
 
     P3PEstimator estimator;
@@ -128,5 +141,17 @@ int main()
     ransac.Initialize();
     RansacSummary summary;
     Matrix< double, 3, 4 > best_model;
+    Timer tt;
     ransac.Estimate( data, &best_model, &summary );
+    double duration( tt.ElapsedTimeInSeconds() );
+    cout << duration << " s" << endl;
+
+    // checkout results
+    cout << best_model << endl;
+    cout << "iterations:" << summary.num_iterations << endl;
+    for ( size_t i = 0; i < summary.inliers.size(); ++i )
+    {
+        cout << summary.inliers[i] << " ";
+    }
+    cout << endl;
 }
