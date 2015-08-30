@@ -15,6 +15,8 @@
 #include <TooN/TooN.h>
 #include <pnpsolvers/P3p.h>
 
+#include "theia/util/timer.h"
+
 using namespace std;
 using namespace Eigen;
 
@@ -46,6 +48,8 @@ int main()
         }
     }
     ifs.close();
+
+    theia::Timer tt;
     P3p p3p;
     TooN::Matrix<3,3> f;
     TooN::Matrix<3,3> w;
@@ -57,8 +61,11 @@ int main()
             w(j,i) = pts[i](j);
         }
     }
+    tt.Reset();
     p3p.computePoses( f, w, sol );
+    double duration1 = tt.ElapsedTimeInSeconds();
     cout << sol << endl;
+    cout << "duration=" << duration1 << " seconds" << endl;
 
 
 
@@ -73,9 +80,12 @@ int main()
         worldPoints.col(i) = pts[i];
     }
     vector< Matrix<double,3,4> > solutions;
+    tt.Reset();
     kp3p.computePoses( featureVectors, worldPoints, solutions );
+    double duration2 = tt.ElapsedTimeInSeconds();
     for ( int i = 0; i < solutions.size(); ++i )
     {
         cout << solutions[i] << endl;
     }
+    cout << "duration=" << duration2 << " seconds" << endl;
 }

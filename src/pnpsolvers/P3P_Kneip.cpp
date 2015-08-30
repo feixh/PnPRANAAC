@@ -99,8 +99,8 @@ int P3P_Kneip::computePoses( Matrix3d featureVectors, Matrix3d worldPoints, vect
 
 	if( f3[2] > 0 )
 	{
-		f1 = featureVectors.col(0);
-		f2 = featureVectors.col(1);
+		f1 = featureVectors.col(1);
+		f2 = featureVectors.col(0);
 		f3 = featureVectors.col(2);
 
 		e1 = f1;
@@ -212,6 +212,7 @@ int P3P_Kneip::computePoses( Matrix3d featureVectors, Matrix3d worldPoints, vect
 
 	// Backsubstitution of each solution
 
+	Matrix<double,3,4> gwc;
 	for(int i=0; i<4; i++)
 	{
 		double cot_alpha = (-f_1*p_1/f_2-realRoots[i]*p_2+d_12*b)/(-f_1*realRoots[i]*p_2/f_2+p_1-d_12);
@@ -236,10 +237,9 @@ int P3P_Kneip::computePoses( Matrix3d featureVectors, Matrix3d worldPoints, vect
 				0,				-sin_theta,				cos_theta;
 
 		R = N.transpose()*R.transpose()*T;
-		Matrix<double,3,4> gwc;
 		gwc.block<3,3>(0,0) = R;
 		gwc.block<3,1>(0,3) = C;
-		solutions.push_back( gwc );
+		solutions.emplace_back( gwc );
 	}
 
 	return 0;
