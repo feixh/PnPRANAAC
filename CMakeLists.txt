@@ -49,3 +49,5 @@ ${GLOG_LIBRARIES}
 
 #add_executable( ransac_test test/ransac_test.cpp)
 #target_link_libraries(ransac_test )
+
+add_executable( p3p_test test/p3p_test.cpp)

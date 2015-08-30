@@ -46,15 +46,16 @@
 #ifndef P3P_H_
 #define P3P_H_
 
-#include <TooN/TooN.h>
+#include <Eigen/Core>
+#include <Eigen/StdVector>
 
 class P3p {
 public:
 	P3p();
 	virtual ~P3p();
 
-	int computePoses( TooN::Matrix<3,3> featureVectors, TooN::Matrix<3,3> worldPoints, TooN::Matrix<3,16> & solutions );
-	int solveQuartic( TooN::Vector<5> factors, TooN::Vector<4> & realRoots );
+	int computePoses( Eigen::Matrix3d featureVectors, Eigen::Matrix3d worldPoints, std::vector< Eigen::Matrix<double,3,4> > &solutions );
+	int solveQuartic( Eigen::Matrix< double, 5, 1 > factors, Eigen::Matrix< double, 4, 1 > & realRoots );
 };
 
 #endif /* P3P_H_ */
