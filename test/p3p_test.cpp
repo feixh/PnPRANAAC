@@ -8,12 +8,10 @@
 #include <cassert>
 
 #include "pnpsolvers/P3P_Kneip.h"
-#include "pnpsolvers/P3p.h"
 
 #include <Eigen/Core>
 #include <Eigen/StdVector>
 #include <TooN/TooN.h>
-#include <pnpsolvers/P3p.h>
 
 #include "theia/util/timer.h"
 
@@ -50,24 +48,6 @@ int main()
     ifs.close();
 
     theia::Timer tt;
-    P3p p3p;
-    TooN::Matrix<3,3> f;
-    TooN::Matrix<3,3> w;
-    TooN::Matrix<3,16> sol;
-    for ( int i = 0; i < 3; ++i )
-    {
-        for ( int j = 0; j < 3; ++j ){
-            f(j,i) = pc[i](j);
-            w(j,i) = pts[i](j);
-        }
-    }
-    tt.Reset();
-    p3p.computePoses( f, w, sol );
-    double duration1 = tt.ElapsedTimeInSeconds();
-    cout << sol << endl;
-    cout << "duration=" << duration1 << " seconds" << endl;
-
-
 
     // eigen version of Kneip's P3P algorithm
     cout << "===" << endl;
@@ -85,7 +65,7 @@ int main()
     double duration2 = tt.ElapsedTimeInSeconds();
     for ( int i = 0; i < solutions.size(); ++i )
     {
-        cout << solutions[i] << endl;
+        cout << solutions[i] << endl << endl;
     }
     cout << "duration=" << duration2 << " seconds" << endl;
 }
