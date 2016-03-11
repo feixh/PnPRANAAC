@@ -18,17 +18,8 @@ ${GLOG_INCLUDE_DIRS}
 
 # Add sources
 set(RANSAC_SRC
-  src/math/closed_form_polynomial_solver.cc
-  src/math/find_polynomial_roots_companion_matrix.cc
-  src/math/find_polynomial_roots_jenkins_traub.cc
-  src/math/matrix/dominant_eigensolver.cc
-  src/math/polynomial.cc
-  src/math/probability/sequential_probability_ratio.cc
   src/util/random.cc
-#   src/util/stringprintf.cc
-#   src/util/threadpool.cc
   src/util/timer.cc
-
   src/pnpsolvers/P3P_Kneip.cpp
 )
 

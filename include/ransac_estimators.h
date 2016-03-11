@@ -10,7 +10,6 @@
 
 // theia
 #include <theia/solvers/ransac.h>
-#include <theia/solvers/arrsac.h>
 #include <theia/solvers/estimator.h>
 #include <theia/solvers/random_sampler.h>
 #include <theia/util/timer.h>
