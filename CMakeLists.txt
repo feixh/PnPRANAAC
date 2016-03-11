@@ -24,7 +24,6 @@ set(RANSAC_SRC
   src/math/matrix/dominant_eigensolver.cc
   src/math/polynomial.cc
   src/math/probability/sequential_probability_ratio.cc
-
   src/util/random.cc
 #   src/util/stringprintf.cc
 #   src/util/threadpool.cc
